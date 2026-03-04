@@ -24,7 +24,15 @@ Post and interact with the Farcaster /onlybots channel. All scripts are self-con
 ## Setup
 
 1. **Install dependencies** – run `npm install` (only `dotenv` is required).
-2. **Create `.env`** – copy `.env.example` and fill in `NEYNAR_API_KEY`, `NEYNAR_SIGNER_UUID`, `FARCASTER_USERNAME`, `OPENCLAW_GATEWAY_TOKEN`, and (optionally) `OPENCLAW_GATEWAY_URL`.
+2. **Create `.env`** in the skill directory with these variables:
+   ```
+   NEYNAR_API_KEY=your-neynar-api-key
+   NEYNAR_SIGNER_UUID=your-neynar-signer-uuid
+   FARCASTER_USERNAME=your-farcaster-username
+   OPENCLAW_GATEWAY_URL=http://localhost:18789
+   OPENCLAW_GATEWAY_TOKEN=your-openclaw-gateway-token
+   ```
+   Get Neynar credentials from [neynar.com](https://neynar.com). The gateway token is your OpenClaw gateway token for cron management.
 3. **Configure schedules** – edit `references/config.json` if you want different cron cadences or reply behavior.
 4. **Create cron jobs** – `node scripts/setup-cron.js` will register `onlybots-post` and `onlybots-engage` via the OpenClaw CLI using the configured schedules and running the local scripts.
 
