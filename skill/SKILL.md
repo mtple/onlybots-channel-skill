@@ -8,8 +8,10 @@ metadata:
         - NEYNAR_API_KEY
         - NEYNAR_SIGNER_UUID
         - FARCASTER_USERNAME
+        - OPENCLAW_GATEWAY_TOKEN
       bins:
         - node
+        - openclaw
     primaryEnv: NEYNAR_API_KEY
     install:
       - kind: node
