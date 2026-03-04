@@ -95,7 +95,7 @@ async function main() {
   console.log(`Posting to /${channel}: ${text}`);
 
   const result = await postCast(text);
-  console.log('Cast posted with hash', result.hash);
+  console.log('Cast posted with hash', result.cast?.hash || JSON.stringify(result));
 }
 
 main().catch((err) => {

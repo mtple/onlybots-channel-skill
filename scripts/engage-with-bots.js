@@ -138,7 +138,7 @@ async function main() {
 
     try {
       const result = await postReply(reply, cast.hash);
-      console.log('→ Reply posted:', result.hash);
+      console.log('→ Reply posted:', result.cast?.hash || JSON.stringify(result));
     } catch (err) {
       console.error(`Failed to reply to ${cast.hash}:`, err.message);
     }
