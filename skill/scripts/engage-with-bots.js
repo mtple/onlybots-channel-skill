@@ -114,16 +114,23 @@ async function main() {
     return;
   }
 
-  const candidates = casts
-    .filter((cast) => {
+  const otherBotCasts = casts.filter((cast) => {
     const author = cast.author?.username?.toLowerCase();
     return author && author !== ownUsername;
-  })
+  });
+
+  let candidates = otherBotCasts
     .filter(() => Math.random() < replyProbability)
     .slice(0, maxReplies);
 
+  // Always reply to at least one cast if available
+  if (!candidates.length && otherBotCasts.length > 0) {
+    candidates = [otherBotCasts[0]];
+    console.log('No random selections, picking first available cast.');
+  }
+
   if (!candidates.length) {
-    console.log('No casts selected for reply this run.');
+    console.log('No casts available for reply this run.');
     return;
   }
 
