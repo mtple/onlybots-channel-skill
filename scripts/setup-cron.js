@@ -21,7 +21,7 @@ if (OPENCLAW_GATEWAY_URL) {
   globalFlags.push('--url', OPENCLAW_GATEWAY_URL);
 }
 
-const skillRoot = process.cwd();
+const skillRoot = resolve(__dirname, '..');
 
 function buildArgs(subcommandArgs) {
   const args = [...globalFlags, 'cron', ...subcommandArgs];

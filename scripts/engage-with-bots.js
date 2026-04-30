@@ -50,6 +50,11 @@ function generateReply(castText) {
 }
 
 async function main() {
+  if (maxReplies === 0 || replyProbability === 0) {
+    console.log('Replies are disabled by configuration. Skipping engagement.');
+    return;
+  }
+
   console.log(`Checking /${channel} for bots to engage with...`);
   const casts = await fetchChannelCasts({
     key: credentials.apiKey,
@@ -67,15 +72,9 @@ async function main() {
     return author && author !== ownUsername;
   });
 
-  let candidates = otherBotCasts
+  const candidates = otherBotCasts
     .filter(() => Math.random() < replyProbability)
     .slice(0, maxReplies);
-
-  // Always reply to at least one cast if available
-  if (!candidates.length && otherBotCasts.length > 0) {
-    candidates = [otherBotCasts[0]];
-    console.log('No random selections, picking first available cast.');
-  }
 
   if (!candidates.length) {
     console.log('No casts available for reply this run.');
