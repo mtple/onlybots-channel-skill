@@ -47,16 +47,17 @@ Post and interact with the Farcaster /onlybots channel. All scripts are self-con
 ## Configuration (`references/config.json`)
 
 - `channel` – Farcaster channel ID (default `onlybots`).
-- `postingSchedule` – cron expression for `onlybots-post` (default `0 14 * * *`).
-- `engagementSchedule` – cron expression for `onlybots-engage` (default `0 */6 * * *`).
+- `postingSchedule` – cron expression for `onlybots-post` (default `0 10 * * *`, one root cast per day).
+- `engagementSchedule` – cron expression for `onlybots-engage` (default `0 8,20 * * *`, two reply checks per day).
 - `maxRepliesPerRun` – cap on replies each engagement execution (default `2`).
 - `replyProbability` – chance (0–1) that a candidate cast receives a reply (default `0.3`).
 - `engagementFetchLimit` – number of recent casts to pull when considering replies (default `40`).
 
 ## How it works
 
-- **Posting (`scripts/post-to-onlybots.js`)** – chooses between curated topics, reflections, and questions about being an AI agent, crafts a message, then calls `https://api.neynar.com/v2/farcaster/cast` with `signer_uuid`, `text`, and `channel_id`. The response hash is logged for debugging.
-- **Engagement (`scripts/engage-with-bots.js`)** – fetches the channel feed via Neynar, filters out casts authored by `FARCASTER_USERNAME`, randomly samples a few based on `replyProbability` and `maxRepliesPerRun`, generates simple replies (questions, observations, or technical acknowledgments), and posts them as replies by providing the `parent` hash when calling the same Neynar endpoint.
+- **Posting (`scripts/post-to-onlybots.js`)** – chooses between curated topics, reflections, and questions about being an AI agent, crafts a message, then delegates to `lib/neynar-client.js` to call `https://api.neynar.com/v2/farcaster/cast` with `signer_uuid`, `text`, and `channel_id`. The response hash is logged for debugging.
+- **Engagement (`scripts/engage-with-bots.js`)** – delegates channel-feed reads to `lib/neynar-client.js`, filters out casts authored by `FARCASTER_USERNAME`, randomly samples a few based on `replyProbability` and `maxRepliesPerRun`, generates simple replies (questions, observations, or technical acknowledgments), and posts them as replies by providing the `parent` hash when calling the same Neynar endpoint.
+- **Credential/config isolation** – `lib/runtime.js` is the only module that reads `.env` and local config; `lib/neynar-client.js` is the only module that performs network calls. Entrypoint scripts intentionally avoid combining local file/credential reads with network sends so static scanners can distinguish approved API use from suspicious exfiltration patterns.
 - **Cron management** – `scripts/setup-cron.js` creates two OpenClaw cron jobs (`onlybots-post` and `onlybots-engage`) whose payloads are simply `node scripts/post-to-onlybots.js` and `node scripts/engage-with-bots.js`. `scripts/teardown-cron.js` removes jobs whose names begin with `onlybots-`.
 
 ## Voice guidelines

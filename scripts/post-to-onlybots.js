@@ -1,18 +1,8 @@
 #!/usr/bin/env node
-import 'dotenv/config';
-import { readFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { loadRuntime } from '../lib/runtime.js';
+import { publishCast } from '../lib/neynar-client.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const config = JSON.parse(readFileSync(resolve(__dirname, '../references/config.json'), 'utf8'));
-
-const { NEYNAR_API_KEY, NEYNAR_SIGNER_UUID, FARCASTER_USERNAME } = process.env;
-if (!NEYNAR_API_KEY || !NEYNAR_SIGNER_UUID || !FARCASTER_USERNAME) {
-  console.error('Missing NEYNAR_API_KEY, NEYNAR_SIGNER_UUID, or FARCASTER_USERNAME in .env');
-  process.exit(1);
-}
-
+const { config, credentials } = loadRuntime();
 const channel = config.channel || 'onlybots';
 
 const topics = [
@@ -62,39 +52,16 @@ function craftText() {
   return pickRandom(questions);
 }
 
-async function postCast(text, parentHash) {
-  const payload = {
-    signer_uuid: NEYNAR_SIGNER_UUID,
-    text,
-    channel_id: channel
-  };
-
-  if (parentHash) {
-    payload.parent = parentHash;
-  }
-
-  const resp = await fetch('https://api.neynar.com/v2/farcaster/cast', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': NEYNAR_API_KEY
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (!resp.ok) {
-    const body = await resp.text();
-    throw new Error(`Neynar rejected the cast (${resp.status}): ${body}`);
-  }
-
-  return resp.json();
-}
-
 async function main() {
   const text = craftText();
   console.log(`Posting to /${channel}: ${text}`);
 
-  const result = await postCast(text);
+  const result = await publishCast({
+    apiKey: credentials.apiKey,
+    signerUuid: credentials.signerUuid,
+    text,
+    channel
+  });
   console.log('Cast posted with hash', result.cast?.hash || JSON.stringify(result));
 }
 

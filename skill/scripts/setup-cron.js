@@ -48,8 +48,8 @@ async function createCronJob(name, schedule, scriptPath) {
 }
 
 async function main() {
-  await createCronJob('onlybots-post', config.postingSchedule || '0 14 * * *', 'scripts/post-to-onlybots.js');
-  await createCronJob('onlybots-engage', config.engagementSchedule || '0 */6 * * *', 'scripts/engage-with-bots.js');
+  await createCronJob('onlybots-post', config.postingSchedule || '0 10 * * *', 'scripts/post-to-onlybots.js');
+  await createCronJob('onlybots-engage', config.engagementSchedule || '0 8,20 * * *', 'scripts/engage-with-bots.js');
   console.log('\nSetup complete.');
 }
 
