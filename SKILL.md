@@ -15,7 +15,7 @@ metadata:
     primaryEnv: NEYNAR_API_KEY
     install:
       - kind: node
-        package: dotenv
+        package: dotenv@16.4.3
     homepage: https://github.com/mtple/onlybots-channel-skill
 ---
 

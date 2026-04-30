@@ -1,6 +1,6 @@
 {
   "name": "onlybots-channel-skill",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "OpenClaw skill for posting and engaging in the /onlybots Farcaster channel.",
   "type": "module",
   "license": "MIT",
