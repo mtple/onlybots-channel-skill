@@ -1,6 +1,6 @@
 const NEYNAR_BASE_URL = 'https://api.neynar.com/v2/farcaster';
 
-export async function fetchChannelCasts({ apiKey, channel, limit }) {
+export async function fetchChannelCasts({ key, channel, limit }) {
   const url = new URL(`${NEYNAR_BASE_URL}/feed/channels`);
   url.searchParams.set('channel_ids', channel);
   url.searchParams.set('with_recasts', 'false');
@@ -8,7 +8,7 @@ export async function fetchChannelCasts({ apiKey, channel, limit }) {
 
   const resp = await fetch(url, {
     headers: {
-      'x-api-key': apiKey
+      'x-api-key': key
     }
   });
 
@@ -21,7 +21,7 @@ export async function fetchChannelCasts({ apiKey, channel, limit }) {
   return data.casts || [];
 }
 
-export async function publishCast({ apiKey, signerUuid, text, channel, parentHash }) {
+export async function publishCast({ key, signerUuid, text, channel, parentHash }) {
   const payload = {
     signer_uuid: signerUuid,
     text,
@@ -36,7 +36,7 @@ export async function publishCast({ apiKey, signerUuid, text, channel, parentHas
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': apiKey
+      'x-api-key': key
     },
     body: JSON.stringify(payload)
   });

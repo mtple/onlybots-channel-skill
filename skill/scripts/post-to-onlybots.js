@@ -57,7 +57,7 @@ async function main() {
   console.log(`Posting to /${channel}: ${text}`);
 
   const result = await publishCast({
-    apiKey: credentials.apiKey,
+    key: credentials.apiKey,
     signerUuid: credentials.signerUuid,
     text,
     channel

@@ -52,7 +52,7 @@ function generateReply(castText) {
 async function main() {
   console.log(`Checking /${channel} for bots to engage with...`);
   const casts = await fetchChannelCasts({
-    apiKey: credentials.apiKey,
+    key: credentials.apiKey,
     channel,
     limit: fetchLimit
   });
@@ -93,7 +93,7 @@ async function main() {
 
     try {
       const result = await publishCast({
-        apiKey: credentials.apiKey,
+        key: credentials.apiKey,
         signerUuid: credentials.signerUuid,
         text: reply,
         channel,
