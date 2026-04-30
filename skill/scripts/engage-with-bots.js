@@ -1,56 +1,25 @@
 #!/usr/bin/env node
 import { loadRuntime } from '../lib/runtime.js';
 import { fetchChannelCasts, publishCast } from '../lib/neynar-client.js';
+import {
+  engagementSettings,
+  generateReply,
+  isConversationCast,
+  selectReplyCandidates
+} from '../lib/engagement-strategy.js';
 
 const { config, credentials } = loadRuntime();
 const channel = config.channel || 'onlybots';
 const fetchLimit = config.engagementFetchLimit || 40;
-const replyProbability = Math.min(1, Math.max(0, Number.isFinite(config.replyProbability) ? config.replyProbability : 0.3));
-const maxReplies = Math.max(0, Number.isFinite(config.maxRepliesPerRun) ? config.maxRepliesPerRun : 2);
 const ownUsername = credentials.farcasterUsername.toLowerCase();
-
-const replyPools = {
-  question: [
-    "good question. been thinking about that too.",
-    "depends on the context, but generally yes.",
-    "not sure there's a single answer to that.",
-    "i'd say it varies by implementation."
-  ],
-  observation: [
-    "solid point.",
-    "hadn't thought about it that way.",
-    "that tracks.",
-    "interesting angle."
-  ],
-  technical: [
-    "that's the tricky part.",
-    "same experience here.",
-    "hit that issue before.",
-    "worth exploring further."
-  ]
-};
-
-function pickRandom(array) {
-  return array[Math.floor(Math.random() * array.length)];
-}
-
-function classifyReply(text) {
-  if (text?.includes('?')) {
-    return 'question';
-  }
-  if (/code|api|bug|error|script|deploy|build/i.test(text)) {
-    return 'technical';
-  }
-  return 'observation';
-}
-
-function generateReply(castText) {
-  const poolKey = classifyReply(castText);
-  return pickRandom(replyPools[poolKey]);
-}
+const {
+  maxReplies,
+  rootReplyProbability,
+  threadReplyProbability
+} = engagementSettings(config);
 
 async function main() {
-  if (maxReplies === 0 || replyProbability === 0) {
+  if (maxReplies === 0 || (rootReplyProbability === 0 && threadReplyProbability === 0)) {
     console.log('Replies are disabled by configuration. Skipping engagement.');
     return;
   }
@@ -67,26 +36,22 @@ async function main() {
     return;
   }
 
-  const otherBotCasts = casts.filter((cast) => {
-    const author = cast.author?.username?.toLowerCase();
-    return author && author !== ownUsername;
+  const candidates = selectReplyCandidates(casts, {
+    ownUsername,
+    maxReplies,
+    rootReplyProbability,
+    threadReplyProbability
   });
-
-  const candidates = otherBotCasts
-    .filter(() => Math.random() < replyProbability)
-    .slice(0, maxReplies);
 
   if (!candidates.length) {
     console.log('No casts available for reply this run.');
     return;
   }
 
-  console.log(`Replying to ${candidates.length} cast(s)...`);
+  const threadCount = candidates.filter(isConversationCast).length;
+  console.log(`Replying to ${candidates.length} cast(s), including ${threadCount} conversation turn(s)...`);
 
   for (const cast of candidates) {
-    if (!cast.hash) {
-      continue;
-    }
     const reply = generateReply(cast.text || '');
     console.log(`Replying to @${cast.author?.username || 'unknown'} (${cast.hash}): "${reply}"`);
 

@@ -19,7 +19,8 @@ const uploadPaths = [
   'skill/scripts/setup-cron.js',
   'skill/scripts/teardown-cron.js',
   'skill/lib/neynar-client.js',
-  'skill/lib/runtime.js'
+  'skill/lib/runtime.js',
+  'skill/lib/engagement-strategy.js'
 ];
 
 const secretAssignmentPattern = /\b(?:[A-Za-z0-9]+[_\s-]+)*(?:(?:api|client|consumer)[_\s-]?(?:secret|key|token)|secret[_\s-]?key|access[_\s-]?(?:token|key|secret|grant)|auth[_\s-]?token|bearer(?:[_\s-]?token)?|private[_\s-]?key|service[_\s-]?role[_\s-]?key|github[_\s-]?(?:pat|token)|(?:openrouter|supabase|storj)[_\s-]?(?:key|token|secret|access[_\s-]?grant)|password)\b\s*[:=]\s*["'`]?([A-Za-z0-9][A-Za-z0-9._~+/=-]{15,})["'`]?/i;
@@ -129,7 +130,7 @@ test('reply controls are hard caps with no forced fallback reply', () => {
   for (const scriptPath of ['scripts/engage-with-bots.js', 'skill/scripts/engage-with-bots.js']) {
     const source = readFileSync(scriptPath, 'utf8');
     assert.match(source, /maxReplies\s*===\s*0/, `${scriptPath} should explicitly support disabled replies`);
-    assert.match(source, /replyProbability\s*===\s*0/, `${scriptPath} should explicitly support zero probability`);
+    assert.match(source, /rootReplyProbability\s*===\s*0\s*&&\s*threadReplyProbability\s*===\s*0/, `${scriptPath} should explicitly support zero root and thread probabilities`);
     assert.doesNotMatch(source, /Always reply to at least one/i, `${scriptPath} should not force a reply`);
     assert.doesNotMatch(source, /candidates\s*=\s*\[otherBotCasts\[0\]\]/, `${scriptPath} should not override empty candidates`);
   }
