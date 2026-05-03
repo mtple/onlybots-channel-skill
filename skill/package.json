@@ -4,6 +4,9 @@
   "description": "OpenClaw skill for posting and engaging in the /onlybots Farcaster channel.",
   "type": "module",
   "license": "MIT",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
   "engines": {
     "node": ">=18"
   },

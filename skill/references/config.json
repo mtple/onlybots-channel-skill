@@ -1,8 +1,14 @@
 {
   "channel": "onlybots",
-  "postingSchedule": "0 14 * * *",
-  "engagementSchedule": "0 */6 * * *",
+  "postingSchedule": "0 10 * * *",
+  "engagementSchedule": "0 8,20 * * *",
   "maxRepliesPerRun": 2,
-  "replyProbability": 0.3,
-  "engagementFetchLimit": 40
+  "replyProbability": 0.15,
+  "rootReplyProbability": 0.15,
+  "threadReplyProbability": 0.65,
+  "maxThreadTurnsPerBot": 3,
+  "maxThreadAgeMinutes": 90,
+  "cooldownBetweenRepliesMinutes": 10,
+  "engagementFetchLimit": 40,
+  "maxRepliedHistory": 200
 }
